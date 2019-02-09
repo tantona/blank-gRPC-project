@@ -1,0 +1,43 @@
+version: "3"
+services:
+  watch-protobuf-definitions:
+    build:
+      context: .
+      dockerfile: $PWD/proto/Dockerfile
+    volumes:
+      - $PWD/proto/:/go/src/PROJECT_ROOT/proto
+    build:
+      context: .
+      dockerfile: $PWD/proto/Dockerfile
+
+  example-service:
+    build:
+      context: .
+      dockerfile: $PWD/dev/Dockerfile
+    environment:
+      GRPC_PORT: ":50051"
+      HTTP+PORT: ":8080"
+      ENV: dev
+    ports:
+      - 8080:8080
+      - 50051:50051
+    working_dir: /go/src/PROJECT_ROOT/services/example
+    volumes:
+      - $GOPATH/src/PROJECT_ROOT/:/go/src/PROJECT_ROOT
+    depends_on:
+      - watch-protobuf-definitions
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - 8090:8080
+    volumes:
+      - $PWD/proto/services/example/example.swagger.json:/usr/share/nginx/html/services/example.swagger.json:ro
+    environment:
+      API_URLS: '
+        [
+          {url: "http://localhost:8090/services/example.swagger.json", name: "Examples"},
+        ]
+      '
+    depends_on:
+      - watch-protobuf-definitions

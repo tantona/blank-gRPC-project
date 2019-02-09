@@ -1,0 +1,80 @@
+syntax = "proto3";
+package examplepb;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    title: "Examples";
+    version: "0.1";
+    contact: {
+      name: "";
+      email: "";
+    };
+  };
+};
+
+
+service ExampleService {
+  rpc Create (CreateRequest) returns (Example) {
+    option (google.api.http) = {
+      post: "/api/v1/examples"
+      body: "*"
+    };
+  }
+
+  rpc Get (GetRequest) returns (Example) {
+    option (google.api.http) = {
+      get: "/api/v1/examples/{id}"
+    };
+  }
+
+  rpc List (ListRequest) returns (ListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/examples"
+    };
+  }
+
+  rpc Delete (DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/examples/{id}"
+    };
+  }
+
+  rpc Healthz (HealthzRequest) returns (HealthzResponse) {}
+}
+
+message CreateRequest {};
+
+message CreateResponse {
+  string id = 1;
+};
+
+message DeleteRequest {
+  string id = 1;
+};
+
+message DeleteResponse {};
+
+message GetRequest {
+  string id = 1;
+};
+
+message ListRequest {};
+
+message ListResponse {
+  repeated Example examples = 1;
+};
+
+message HealthzRequest {
+  string status = 1;
+}
+
+message HealthzResponse {
+  string status = 1;
+}
+
+message Example {
+  string id = 1;
+}
